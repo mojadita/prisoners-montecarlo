@@ -27,7 +27,7 @@ unsigned experiment(unsigned n)
 
     /* random permutation */
     for (unsigned i = 0, j; i < n; i++) {
-        j = RANDOM(n);
+        j = i + RANDOM(n - i);
         if (i != j) {
             unsigned
 				temp = box[i];
