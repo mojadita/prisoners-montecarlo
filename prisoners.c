@@ -94,9 +94,10 @@ int main(int argc, char **argv)
 			num, denom, (double)num / denom);
 
 	/* calculation of 1 - sum(i; n2; n; 1/i) */
-	double prob = 1.0;
 
+	double prob = 1.0;
 	for (int i = N2 + 1; i <= N; i++)
 		prob -= 1.0 / i;
+
 	printf("  Calculated prob: %0.10lf\n", prob);
 } /* main */
