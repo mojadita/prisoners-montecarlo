@@ -60,11 +60,20 @@ unsigned experiment(unsigned n)
                 printf(", %d", j + 1);
         }
         if (!(flags & FLG_QUIET))
-            printf(")%c\n", k <= n2
-					? '*'
-					: '?');
+            printf(")<%u>%c\n", k,
+					k <= n2
+						? '*'
+						: '?');
         if (k <= n2)
             ret_val += k;
+		else {
+			/* if we are not going to print the
+			 * cycles, there's no chance to continue
+			 * as this experiment has already failed.
+			 */
+			if (flags & FLG_QUIET)
+				break;
+		}
     } /* for */
     free(box);
     free(bits);
@@ -78,11 +87,15 @@ int main(int argc, char **argv)
         ITER =   1,
         opt;
 
-    while ((opt = getopt(argc, argv, "i:n:q")) != EOF) {
+    while ((opt = getopt(argc, argv, "i:n:qv")) != EOF) {
         switch (opt) {
-        case 'n': N      = atoi(optarg); break;
-        case 'i': ITER   = atoi(optarg); break;
-        case 'q': flags |= FLG_QUIET;    break;
+        case 'n': N        =  atoi(optarg); break;
+        case 'i': ITER     =  atoi(optarg);
+				  if (ITER > 1)
+					flags |=  FLG_QUIET;
+				  break;
+        case 'q': flags   |=  FLG_QUIET;    break;
+		case 'v': flags   &= ~FLG_QUIET;    break;
         }
     } /* while */
 

@@ -1,0 +1,134 @@
+.Dd $Mdocdate$
+.Dt PRISONERS 1
+.Os
+.Sh NAME
+.Nm prisoners
+.Nd Montecarlo simulation of the prisoners problem.
+.Sh SYNOPSIS
+.Nm
+.Op Fl q
+.Op Fl n Ar nprisoners
+.Op Fl i Ar iterations
+.Sh DESCRIPTION
+The
+.Nm
+program does a Montecarlo simulation of the prisoners problem.
+.Ss INTRODUCTION
+The prisoners problem is a mathematical puzzle consisting on
+determining the probability of a group of prisoners that are
+offered a chance to escape from the prison by selecting a set of
+numbered boxes in which there are a set of numbers (all with the
+numbers 1 to 100, the same as the number of prisoners, which are
+themselves numbered)
+.Pp
+Each prisoner has the possibility to open 50 boxes, (half of the
+total number of prisoners, in case you simulate the problem with
+a different number of them) and check in which box is
+.Ar his
+number.
+If the prisoner opens the box with his number, then he has a
+chance to get out of the prison, and tells the security officer
+at the exit of the room in which box he found his number.
+.Pp
+After all the prisoners have got into the room, only if all of
+them got the correct box number, they will be freed.
+.Pp
+At first, it seems that it will be impossible to get a chance to
+get out of the jail, because the probability that one prisoner is
+capable of getting his number from the set of boxes is 1/2, and
+being independent (and equiprobable) sets of experiment for each
+prisoner, the total probability of getting out of the prison
+would be P(100) = 1/2 * 1/2 * ... * 1/2 (100 times) = (1/2)^100
+(approx. 7.8886E-31).
+.Pp
+But there's a strategy that each prisoner can follow,
+independently of the other prisoners, that will allow the total
+escape probability to grow up to aroun one third.
+Each prisoner has to start with the box that shows his number.
+If that box doesn't have his number, he has to go to the box with
+the label he has found in that box, and so on, until he gets 50
+open boxes (he looses) or he finds his box. (he contributes to
+win)
+The first fact with this strategy is that the chain so
+constructed will warrant that he will finish at the box that has
+his label inside.
+The distribution of labels into the boxes form what is called a
+permutation, a biyective operation that defines a mapping.
+Permutations organize these mappings in chains that can easily
+be demonstrated to form cycles that arrange subsets of numberss
+in disjoint subsets of the total number of elements in the set.
+Another important property is that if we start looking at the box
+with our number on it, it will be warranted that the label will
+be also in the set. 
+It is, indeed, the last box in the cycle, the one that will have
+the label of the first box. (the one you selected first)
+The problem is that, if the chain is longer than 50 boxes, then
+none of the prisoners in that cycle will have a chance of finding
+their label, as it should be in the last box, 
+.Ar "for them all"
+(each prisoner starts at a different box, but the problem doesn't
+change, he will find the box holding his number the last in the
+chain)
+.Pp
+Once we arrive to this point, the problem is to find what is the
+probability that a permutation of 100 elements will not have
+chains longer than 50 elements.
+Or seen from the other side, the probability of failure the
+problem is the probability of having a chain of 51 or more
+elements (there can be only one such chain)
+.Pp
+To select a chain with 51 or more elements we need to select
+first those elements in a total of 100 elements, which is
+Comb(100, l) = 100! / (l! * (100 - l)!) and consider all the
+possible permutations of them (l!) except the possible rotations,
+that are all equivalent (l).
+Each such permutation can appear with any of the permutation of
+the rest of the elements of the total set, making the total
+number of permutations with chains of length l, in a total of N
+numbers: Comb(N, l) * (l-1)! * (N-l)! = 1/N
+.Pp
+If we want to know the probability of not having a chain of more
+than N/2, we need to consider the total number of permutations,
+and take off the probabilities of any of the above cases, leading
+to: P(l < N/2) = 1 - 1/(N/2 + 1) - 1/(N/2 + 2) - ... - 1/N.
+.Pp
+The
+.Nn
+program calculates this probability and compares it with the
+number of experiments in which the selected permutation succeeded
+(all the prisoners got their labels in 50 openings or less) with
+the total number of experiments.
+In order to make it go faster, for each experiment, we get a
+random permutation (giving each permutation equal probability)
+and then calculate the chains (starting from one, following all
+whe chain elements, until we get a chain that is longer than half
+of the number of elements \-because all the prisoners in that
+chain will fail it\- and marking all the visited elements so they
+are not considered more)
+This allows to cope with up to one billion experiments quickly.
+.Sh OPTIONS
+.Bl -tag
+.It Fl i Ar niterations
+Allows to specify the number of iterations that will be made.
+Defaults to one.  In case a number of iterations larger than one
+is selected, the option
+.Fl q
+is also activated.
+.It Fl n Ar nprisoners
+Allows to specify the number of prisoners that will be used on
+each experiment.
+Defaults to 100.
+.It Fl q
+Be quiet.
+Don't print each experiment permutation and the cycles of it.
+Default is to be verbose.
+.It Fl v
+Be verbose.  Just the opposite of the
+.Fl q
+option.  This is used in case you select the
+.Fl i
+option, (that makes the program to be quiet) to show the
+permutation info.
+.El
+.Sh AUTHORS
+.An Luis Colorado Aq Mt luiscoloradourcola@gmail.com
