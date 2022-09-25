@@ -92,7 +92,7 @@ int main(int argc, char **argv)
         denom =   ITER,
 		num   =      0;
 
-    printf("Calc. %d times\n", ITER);
+    printf("Calc. %u times, %u prisoners\n", ITER, N);
 
     for (unsigned i = 0; i < denom; i++)
         if (experiment(N) == N)
